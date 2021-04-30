@@ -3,9 +3,9 @@ import {render} from "react-dom"
 import Range from "./Range"
 
 let props={
-    "width":555,
+    "width":600,
     "min":100,
-    "max":5000,
+    "max":8000,
 }
 render(
     <div>
