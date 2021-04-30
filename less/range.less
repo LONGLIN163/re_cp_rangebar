@@ -1,4 +1,40 @@
-div{
-    transform: rotateX(30deg);
-    box-sizing: border-box;
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.range{
+    padding: 20px;
+    border: 1px solid black;
+    position: relative;
+    margin: 100px;
+    box-sizing: content-box;
+
+    .bar{
+        height: 10px;
+        background-color: rgb(189, 189, 189);   
+        border-radius: 10px;  
+    }
+    .scaleline{
+        position:absolute;
+        bottom: 0;
+        left:0;
+        //background-color: rgb(19, 17, 105);
+        width: 100%;
+        height: 16px;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+
+    .scaleline i{
+        float: left;
+        width: 1px;
+        height: 6px;
+        background-color: orange;
+
+
+        &.big{
+           height: 14px;
+        }
+    }
 }
