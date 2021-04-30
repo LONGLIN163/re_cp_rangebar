@@ -14,14 +14,14 @@ class Range extends Component{
         console.log(this)
 
         this.state={
-            scaleLeft:0,
-            scaleRight:6000
+            scaleLeft:min,
+            scaleRight:max
         }
     }
 
     showScaleLine(){
         var scalelines=[];
-        var length=this.bigUnitAmount*5+1;
+        var length=this.bigUnitAmount*5+1; 
         for(var i=0;i<length;i++){
             scalelines.push(<i key={i}></i>)
         }
@@ -38,7 +38,7 @@ class Range extends Component{
 
        var self=this;
        $(this.refs.range).find(".scaleline i.big").each(function(item){
-           console.log(item)
+           //console.log(item)
            $(this).append("<u>"+(self.props.min+self.perbigUnitNumber*item)+"</u>")
        })
 
@@ -50,26 +50,68 @@ class Range extends Component{
        // define the limit of the right side
        let scaleRightPx=barleft+(this.state.scaleRight-this.props.min)/this.persmallUnitNumber * this.smallUnitWidth // get all small scale units which can be moved
        //console.log(scaleRightPx)
-       $(this.refs.range).find(".bar b.left").draggable({
-            "axis": "x",
-            "containment":[barleft,0,scaleRightPx,0],
-            // "drag":function(event,ui){
-            //     var left=ui.position.left;
-            //     var scaleLeft=Math.ceil((left*((self.props.max-self.props.min)/self.props.width)+100))
-            //     console.log(scaleLeft)
-            // }
-       })
-
        let barright= $(this.refs.range).find(".bar").offset().left+this.props.width;
-       console.log("barright",barright)
+       //console.log("barright",barright)
+       let scaleLeftPx=barleft+(this.state.scaleLeft-this.props.min)/this.persmallUnitNumber * this.smallUnitWidth // get all small scale units which can be moved
 
-       $(this.refs.range).find(".bar b.right").draggable({
-        "axis": "x",
-        "containment":[scaleRightPx,0,barright,0]
+
+       setLeftB();
+       setRightB();
+
+       // *****the positons of two "b" reference as css(the dragged element itself)
+       // 
+       let leftbpx=0;
+       let rightbpx=self.props.width;
+
+       function setLeftB(){
+           $(self.refs.range).find(".bar b.left").draggable({
+                "axis": "x",
+                "containment":[barleft,0,scaleRightPx,0],
+                "drag":function(event,ui){
+                    leftbpx=ui.position.left;
+                    //console.log("left",left)
+                    var scaleLeft=Math.ceil((leftbpx*((self.props.max-self.props.min)/self.props.width)+100))
+                    //console.log(scaleLeft)
+                    self.setState({"scaleLeft":scaleLeft})
+
+                    // reset right edge for the right bar
+                    scaleLeftPx = barleft+(self.state.scaleLeft-self.props.min)/self.persmallUnitNumber * self.smallUnitWidth
+    
+                    //when change left,we need to set limit for right
+                    setRightB();
+
+                    //set span bar length
+                    $(self.refs.range).find(".bar span").css({
+                        "left":leftbpx,
+                        "width":rightbpx-leftbpx
+                    })
+                }
+           })
+       }
+
+       function setRightB(){
+           $(self.refs.range).find(".bar b.right").draggable({
+            "axis": "x",
+            "containment":[scaleLeftPx,0,barright,0],
+            "drag":function(event,ui){
+                rightbpx=ui.position.left;
+                //console.log("left",left)
+                var scaleRight=Math.ceil((rightbpx*((self.props.max-self.props.min)/self.props.width)+100))
+                //console.log(scaleLeft)
+                self.setState({"scaleRight":scaleRight})
+                // reset left edge for the left bar
+                scaleRightPx = barleft+(self.state.scaleRight-self.props.min)/self.persmallUnitNumber * self.smallUnitWidth
+
+                setLeftB();
+                //set span bar length
+                $(self.refs.range).find(".bar span").css({
+                    "width":rightbpx-leftbpx
+                })
+           }
        })
-
-    } 
-
+ 
+      } 
+    }
     render(){
 
         return(
@@ -77,8 +119,12 @@ class Range extends Component{
                 <div className="bar" style={{width:this.props.width+6}}>
                     <span style={{width:this.props.width}} ></span>
 
-                    <b className="left" style={{left:3}}></b>
-                    <b className="right" style={{left:this.props.width+1}}></b>
+                    <b className="left" style={{left:3}}>
+                        <u>{this.state.scaleLeft}</u>
+                    </b>
+                    <b className="right" style={{left:this.props.width+1}}>
+                    <u>{this.state.scaleRight}</u>
+                    </b>
                 </div>
                 <div className="scaleline">
                     {this.showScaleLine()}
