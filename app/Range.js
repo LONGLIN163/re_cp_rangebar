@@ -43,7 +43,7 @@ class Range extends Component{
        })
 
 
-       // ****bar draggable logic
+       // *******************bar draggable logic************************
        // find the distance of the left edge to screen`s edge
        let barleft= $(this.refs.range).find(".bar").offset().left;
        // console.log(barleft)
@@ -70,7 +70,7 @@ class Range extends Component{
                 "drag":function(event,ui){
                     leftbpx=ui.position.left;
                     //console.log("left",left)
-                    var scaleLeft=Math.ceil((leftbpx*((self.props.max-self.props.min)/self.props.width)+100))
+                    var scaleLeft=Math.ceil((leftbpx*((self.props.max-self.props.min)/self.props.width)+self.props.min))
                     //console.log(scaleLeft)
                     self.setState({"scaleLeft":scaleLeft})
 
@@ -96,7 +96,7 @@ class Range extends Component{
             "drag":function(event,ui){
                 rightbpx=ui.position.left;
                 //console.log("left",left)
-                var scaleRight=Math.ceil((rightbpx*((self.props.max-self.props.min)/self.props.width)+100))
+                var scaleRight=Math.ceil((rightbpx*((self.props.max-self.props.min)/self.props.width)+self.props.min))
                 //console.log(scaleLeft)
                 self.setState({"scaleRight":scaleRight})
                 // reset left edge for the left bar
@@ -111,6 +111,32 @@ class Range extends Component{
        })
  
       } 
+
+      // *******************bar draggable logic************************
+      $(self.refs.range).find(".bar").click(function(e){
+           var x=e.clientX-$(this).offset().left;
+           console.log("x",x)
+           if(x<leftbpx){
+            self.setState({scaleLeft:Math.ceil((x*((self.props.max-self.props.min)/self.props.width)+self.props.min))})
+            leftbpx=x;
+            $(self.refs.range).find(".bar b.left").css("left",x);
+            //set span bar length
+            $(self.refs.range).find(".bar span").css({
+                "left":leftbpx,
+                "width":rightbpx-leftbpx
+            })
+          }else if(x>rightbpx){
+            self.setState({scaleRight:Math.ceil((rightbpx*((self.props.max-self.props.min)/self.props.width)+self.props.min))})
+            rightbpx=x;
+            $(self.refs.range).find(".bar b.right").css("left",x);
+            //set span bar length
+            $(self.refs.range).find(".bar span").css({
+                "left":leftbpx,
+                "width":rightbpx-leftbpx
+            }) 
+          }
+      })
+
     }
     render(){
 
